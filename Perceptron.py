@@ -1,5 +1,5 @@
 # Basic Perceptron
-'''Building a Perceptron model and apply this model into the builtin Iris dataset'''
+'''Building a a class Perceptron and apply this model into the builtin Iris dataset'''
 
 import numpy as np
 class Perceptron(object):
@@ -11,7 +11,7 @@ class Perceptron(object):
         w_: 1 dimensional array, weights after fitting i.e. model weight
         errors_: list, number of misclassifications in every epoch.
         """
-    def _init_(self, eta=0.01, n_iter=10):
+    def __init__(self, eta=0.01, n_iter=10):
         self.eta = eta
         self.n_iter = n_iter
     
@@ -33,17 +33,17 @@ class Perceptron(object):
             errors = 0
             for xi, target in zip(X,Y):
                 update = self.eta*(target-self.predict(xi))
-                self.w_[1:] += update*xi
+                self.w_[1:] += update * xi
                 self.w_[0] += update
                 errors += int(update!=0.0)
             self.errors_.append(errors)
         return self
         
-        def net_input(self,X):
-            """Calculate net input"""
-            return np.dot(X, self.w_[1:])+self.w_[0]
+    def net_input(self,X):
+        """Calculate net input"""
+        return np.dot(X, self.w_[1:])+self.w_[0]
         
-        def predict(self.X):
-            '''Return class label after unit steps'''
-            return np.where(self.net_input(X)>=0.0, 1, -1)
+    def predict(self, X):
+        '''Return class label after unit steps'''
+        return np.where(self.net_input(X)>=0.0, 1, -1)
             
