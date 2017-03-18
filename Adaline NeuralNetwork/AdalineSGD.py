@@ -79,10 +79,78 @@ class AdalineSGD(object):
         self.w_initialized = True
     
     def _update_weights(self, xi, target):
+        """ Using Adaline Learning rule (Stochastic Gradient Descent)
+        to update the weihgts"""
+        output = self.net_input(xi)
+        error = (target - output)
+        self.w_[1:] += self.eta* xi.dot(error)
+        self.w_[0] += self.eta*error
+        cost = 0.5* error**2
+        return cost
         
+    def net_input(self, X):
+        """Calculate net input """
+        return np.dot(X, self.w_[1:])+ self.w_[0]
+
+    def actiation(self, X):
+        """ Compute linear activation """
+        return self.net_input(X)
         
+    def predict(self, X):
+        """ return predicted label after unit steps"""
+        return np.where(self.activation(X)>=0.0, 1, -1)
+                     
+# Defining Printing graph function
+from matplotlib.colors import ListedColormap
+def plot_decision_regions(X,Y, classifier, resolution = 0.02 ):
+    ''' set up marker geenraro and color map'''
+    markers = ('s','o','x','^','v')
+    colors = ('red','blue', 'lightgreen', 'gray' , 'cyan')
+    cmap = ListedColormap(colors[:len(np.unique(Y))])
+    
+    ''' Plotting the desicion region'''
+    x1_min, x1_max = X[:,0].min()-1, X[:,0].max()+1
+    x2_min, x2_max = X[:,1].min()-1, X[:,1].max()+1
+    xx1, xx2 = np.meshgrid(np.arange(x1_min, x1_max, resolution),
+                           np.arange(x2_min,x2_max, resolution))
+    Z = classifier.predict(np.array([xx1.ravel(),xx2.ravel()]).T)
+    Z = Z.reshape(xx1.shape)
+    plt.contourf(xx1, xx2, Z, alpha = 0.4, cmap = cmap)
+    plt.xlim(xx1.min(), xx1.max())
+    plt.ylim(xx2.min(),xx2.max())
+    
+    '''plotting class samples'''
+    for i, j in enumerate(np.unique(Y)):
+        plt.scatter(x=X[Y==j,0], y=X[Y==j, 1],
+                    alpha =0.8, c =cmap(i), marker = markers[i], label = j)
+
+# Excuting AdalineSGD algorithm and visualize
+import matplotlib.pyplot as plt
+import pandas as pd
+df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data',
+                 header=None)
+Y = df.iloc[0:100,4].values
+Y= np.where(Y == 'Iris-setosa', -1,1)
+X= df.iloc[0:100,[0,2]].values
+X_std = np.copy(X)
+X_std[:,0] = (X_std[:,0]-X_std[:,0].mean())/X_std[:,0].std()
+X_std[:,1] = (X_std[:,1]-X_std[:,1].mean())/X_std[:,1].std()
+
+ada = AdalineSGD(n_iter = 15, eta =0.01, random_state=1)
+ada.fit(X_std, Y)
+plot_decision_regions(X_std, Y, classfication = ada)
+plt.title('Adaline Stochastic Gradient Descent')
+plt.xlabel('Sepal Length - std')
+plt.ylabel('Petal Length - std')
+plt.legend(loc = 'upper left')
+plt.show()
+plt.plot(range(1, len(ada.cost_)+1), ada.cost_, marker = 'o') 
+plt.xlabel('Epochs')
+plt.ylabel('Average cost') 
+plt.show()      
+
         
-        
+
         
         
         
