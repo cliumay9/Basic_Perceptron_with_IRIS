@@ -42,9 +42,9 @@ class AdalineSGD(object):
         self.cost_ =[]
         for i in range(self.n_iter):
             if self.shuffle:
-                X,Y = self.shuffle(X,Y)
+                X, Y = self._shuffle(X,Y)
             cost = []
-            for xi, target in zip(X,Y):
+            for xi, target in zip(X, Y):
                 cost.append(self._update_weights(xi, target))
             avg_cost =sum(cost)/len(Y)
             self.cost_.append(avg_cost)
@@ -92,7 +92,7 @@ class AdalineSGD(object):
         """Calculate net input """
         return np.dot(X, self.w_[1:])+ self.w_[0]
 
-    def actiation(self, X):
+    def activation(self, X):
         """ Compute linear activation """
         return self.net_input(X)
         
@@ -138,7 +138,7 @@ X_std[:,1] = (X_std[:,1]-X_std[:,1].mean())/X_std[:,1].std()
 
 ada = AdalineSGD(n_iter = 15, eta =0.01, random_state=1)
 ada.fit(X_std, Y)
-plot_decision_regions(X_std, Y, classfication = ada)
+plot_decision_regions(X_std, Y, classifier = ada)
 plt.title('Adaline Stochastic Gradient Descent')
 plt.xlabel('Sepal Length - std')
 plt.ylabel('Petal Length - std')
@@ -149,6 +149,8 @@ plt.xlabel('Epochs')
 plt.ylabel('Average cost') 
 plt.show()      
 
+# Then we can use ada.partial_fit(X_std[0,:], y[0]) 
+# for online learning
         
 
         
